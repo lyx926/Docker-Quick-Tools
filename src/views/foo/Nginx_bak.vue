@@ -63,15 +63,6 @@
              placeholder="请输入后台接口端口"
              v-model="addressPort" @input="input" type="number" />
     </div>
-    <div>
-      <button @click="addServe">追加服务</button>
-    </div>
-    <div v-for="(row, i) in rows" :key="i">
-      <input style="width: 23%" v-model="row.path" @input="input" />
-      <input style="width: 23%" v-model="row.port" @input="input"
-             type="number" />
-      <button @click="delServe(i)">删除</button>
-    </div>
     <h1>command</h1>
     <div>
       <textarea style="width: 50%;" rows="15" v-model="text"></textarea>
@@ -104,7 +95,6 @@ let port = ref("80");
 let ssl = ref("");
 let address = ref("http://172.17.0.1");
 let addressPort = ref("8080");
-let rows = ref([]);
 let text = ref("");
 let config = ref("123");
 
@@ -121,19 +111,6 @@ let config = ref("123");
   document.body.removeChild(dataContainer);
 }*/
 
-function addServe() {
-  rows.value.push({
-    "path": "/home/app/nginx_server/children_server",
-    "port": "801"
-  });
-  input();
-}
-
-function delServe(i) {
-  rows.value.splice(i, 1);
-  input();
-}
-
 function input() {
   let sbHtml = new StringBuffer();
   sbHtml.Append("docker run \\\n");
@@ -141,26 +118,12 @@ function input() {
   sbHtml.Append("  --privileged=true \\\n");
   sbHtml.Append("  --restart=always \\\n");
   sbHtml.Append("  -v " + html_conf_logs_cert.value + "/html:/usr/share/nginx/html \\\n");
-  if (rows.value.length > 0) {
-    rows.value.forEach((o) => {
-      if (o.path.length > 0) {
-        sbHtml.Append("  -v " + html_conf_logs_cert.value + "/html" + o.path + ":/usr/share/nginx/html" + o.path + " \\\n");
-      }
-    });
-  }
   sbHtml.Append("  -v " + html_conf_logs_cert.value + "/conf.d/default.conf:/etc/nginx/conf.d/default.conf \\\n");
   sbHtml.Append("  -v " + html_conf_logs_cert.value + "/logs:/var/log/nginx \\\n");
   if (String(ssl.value).length > 0) {
     sbHtml.Append("  -v " + html_conf_logs_cert.value + "/cert:/etc/nginx/cert \\\n");
   }
   sbHtml.Append("  -p " + port.value + ":" + port.value + " \\\n");
-  if (rows.value.length > 0) {
-    rows.value.forEach((o) => {
-      if (o.port.length > 0) {
-        sbHtml.Append("  -p " + o.port + ":" + o.port + " \\\n");
-      }
-    });
-  }
   if (String(ssl.value).length > 0) {
     sbHtml.Append("  -p " + ssl.value + ":443 \\\n");
   }
@@ -211,16 +174,6 @@ function input() {
     sbConfig.Append("      proxy_pass " + address.value + ":" + addressPort.value + "/;\n");
     sbConfig.Append("  }\n\n");
 
-    if (rows.value.length > 0) {
-      rows.value.forEach((o) => {
-        if (o.path.length > 0) {
-          sbConfig.Append("  location /" + o.path.split("/")[o.path.split("/").length - 1] + " {\n");
-          sbConfig.Append("      root   " + o.path + ";\n");
-          sbConfig.Append("      proxy_pass " + address.value + ":" + o.port + "/;\n");
-          sbConfig.Append("  }\n\n");
-        }
-      });
-    }
 
     sbConfig.Append("  error_page   500 502 503 504  /50x.html;\n");
     sbConfig.Append("  location = /50x.html {\n");
@@ -228,22 +181,6 @@ function input() {
     sbConfig.Append("  }\n");
     sbConfig.Append("}");
 
-    if (rows.value.length > 0) {
-      rows.value.forEach((o) => {
-        if (o.path.length > 0) {
-          sbConfig.Append("\n");
-          sbConfig.Append("\n");
-          sbConfig.Append("server {\n");
-          sbConfig.Append("  listen " + o.port + ";\n");
-          sbConfig.Append("  server_name localhost;\n\n");
-          sbConfig.Append("  location / {\n");
-          sbConfig.Append("      root " + o.path + ";\n");
-          sbConfig.Append("      index index.html index.htm;\n");
-          sbConfig.Append("  }\n");
-          sbConfig.Append("}");
-        }
-      });
-    }
   } else {
     sbConfig.Append("server {\n");
     sbConfig.Append("  listen " + port.value + ";\n");
@@ -260,17 +197,6 @@ function input() {
     sbConfig.Append("      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n");
     sbConfig.Append("      proxy_pass " + address.value + ":" + addressPort.value + "/;\n");
     sbConfig.Append("  }\n\n");
-
-    if (rows.value.length > 0) {
-      rows.value.forEach((o) => {
-        if (o.path.length > 0) {
-          sbConfig.Append("  location /" + o.path.split("/")[o.path.split("/").length - 1] + " {\n");
-          sbConfig.Append("      root   " + o.path + ";\n");
-          sbConfig.Append("      proxy_pass " + address.value + ":" + o.port + "/;\n");
-          sbConfig.Append("  }\n\n");
-        }
-      });
-    }
 
     sbConfig.Append("  error_page   500 502 503 504  /50x.html;\n");
     sbConfig.Append("  location = /50x.html {\n");
@@ -289,22 +215,6 @@ function input() {
         }
     }
     * */
-    if (rows.value.length > 0) {
-      rows.value.forEach((o) => {
-        if (o.path.length > 0) {
-          sbConfig.Append("\n");
-          sbConfig.Append("\n");
-          sbConfig.Append("server {\n");
-          sbConfig.Append("  listen " + o.port + ";\n");
-          sbConfig.Append("  server_name localhost;\n\n");
-          sbConfig.Append("  location / {\n");
-          sbConfig.Append("      root " + o.path + ";\n");
-          sbConfig.Append("      index index.html index.htm;\n");
-          sbConfig.Append("  }\n");
-          sbConfig.Append("}");
-        }
-      });
-    }
   }
 
   config.value = sbConfig.ToString();

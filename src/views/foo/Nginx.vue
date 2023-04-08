@@ -15,32 +15,33 @@
         <n-layout-content content-style="padding: 5px;">
           <n-input type="text" placeholder="容器名称 例:[xxx_nginx]"
                    v-model:value="containerName"
-                   @input="input()" />
+                   @input="input()"/>
         </n-layout-content>
         <n-layout-content content-style="padding: 5px;">
           <n-input type="text" placeholder="容器目录 例:[/home/app/xxx_server]"
-                   v-model:value="containerCert" @input="input" />
+                   v-model:value="containerCert" @input="input"/>
         </n-layout-content>
       </n-layout>
       <n-layout has-sider>
         <n-layout-content content-style="padding: 5px;">
           <n-input type="text" placeholder="容器端口 例:[80]"
-                   v-model:value="containerPort" @input="input" />
+                   v-model:value="containerPort" @input="input"/>
         </n-layout-content>
         <n-layout-content content-style="padding: 5px;">
           <n-input type="text" placeholder="容器ssl端口 例:[443]自行配置证书"
-                   v-model:value="containerSslPort" @input="input" />
+                   v-model:value="containerSslPort" @input="input"/>
         </n-layout-content>
         <n-layout-content content-style="padding: 5px;">
           <n-input type="text"
                    placeholder="代理地址 例:[http://172.17.0.1]docker网卡ip或公网ip或域名"
                    v-model:value="apiUrl"
-                   @input="input" />
+                   @input="input"/>
         </n-layout-content>
         <n-layout-content content-style="padding: 5px;">
-          <n-input type="text" placeholder="api后台端口 例:[8080]自行配置/prod-api"
+          <n-input type="text"
+                   placeholder="api后台端口 例:[8080]自行配置/prod-api"
                    v-model:value="apiPort"
-                   @input="input" />
+                   @input="input"/>
         </n-layout-content>
       </n-layout>
       <n-layout has-sider>
@@ -53,11 +54,11 @@
       <n-layout has-sider v-for="(server, i) in servers" :key="i">
         <n-layout-content content-style="padding: 5px;">
           <n-input type="text" placeholder="子服务目录名称 例:[/xxx]"
-                   v-model:value="server.path" @input="input" />
+                   v-model:value="server.path" @input="input"/>
         </n-layout-content>
         <n-layout-content content-style="padding: 5px;">
           <n-input type="text" placeholder="子服务端口 例:[801]"
-                   v-model:value="server.port" @input="input" />
+                   v-model:value="server.port" @input="input"/>
         </n-layout-content>
         <n-layout-content content-style="padding: 5px;">
           <n-button style="width: 100%" type="error" @click="delServe(i)">
@@ -115,31 +116,31 @@
 </style>
 <script setup lang="ts">
 
-import { ref, onMounted } from "vue";
+import {ref, onMounted} from "vue";
 
 onMounted(() => {
   input();
 });
 
-let containerName = ref("nginx_server");
-let containerCert = ref("/home/app/nginx_server");
+let containerName = ref("web_nginx");
+let containerCert = ref("/home/app/web_server");
 let containerPort = ref("80");
 let containerSslPort = ref("");
 let apiUrl = ref("http://172.17.0.1");
 let apiPort = ref("");
-let servers = ref([]);
+let servers: any = ref([]);
 let command = ref("");
 let config = ref("");
 
 function addServe() {
   servers.value.push({
-    "path": "/children_server",
-    "port": "801"
+    path: "/children_server",
+    port: "801"
   });
   input();
 }
 
-function delServe(i) {
+function delServe(i: any) {
   servers.value.splice(i, 1);
   input();
 }
@@ -152,7 +153,7 @@ function input() {
   sbHtml.Append("  --restart=always \\\n");
   sbHtml.Append("  -v " + containerCert.value + "/html:/usr/share/nginx/html \\\n");
   if (servers.value.length > 0) {
-    servers.value.forEach((o) => {
+    servers.value.forEach((o: any) => {
       if (o.path.length > 0) {
         sbHtml.Append("  -v " + containerCert.value + "/html" + o.path + ":/usr/share/nginx/html" + o.path + " \\\n");
       }
@@ -165,7 +166,7 @@ function input() {
   }
   sbHtml.Append("  -p " + containerPort.value + ":" + containerPort.value + " \\\n");
   if (servers.value.length > 0) {
-    servers.value.forEach((o) => {
+    servers.value.forEach((o: any) => {
       if (o.port.length > 0) {
         sbHtml.Append("  -p " + o.port + ":" + o.port + " \\\n");
       }
@@ -202,8 +203,8 @@ function input() {
     sbConfig.Append("server {\n");
     sbConfig.Append("  listen " + containerSslPort.value + " ssl;\n");
     sbConfig.Append("  server_name liuyixiang.xyz;\n");
-    sbConfig.Append("  ssl_certificate /etc/nginx/cert/containerSslPort.crt;\n");
-    sbConfig.Append("  ssl_certificate_key /etc/nginx/cert/containerSslPort.key;\n");
+    sbConfig.Append("  ssl_certificate /etc/nginx/cert/ssl.crt;\n");
+    sbConfig.Append("  ssl_certificate_key /etc/nginx/cert/ssl.key;\n");
     sbConfig.Append("  ssl_session_timeout 5m;\n");
     sbConfig.Append("  ssl_protocols TLSv1 TLSv1.1 TLSv1.2;\n");
     sbConfig.Append("  ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE;\n");
@@ -225,7 +226,7 @@ function input() {
     }
 
     if (servers.value.length > 0) {
-      servers.value.forEach((o) => {
+      servers.value.forEach((o: any) => {
         if (o.path.length > 0) {
           sbConfig.Append("  location /" + o.path.split("/")[o.path.split("/").length - 1] + " {\n");
           sbConfig.Append("      root   " + o.path + ";\n");
@@ -242,7 +243,7 @@ function input() {
     sbConfig.Append("}");
 
     if (servers.value.length > 0) {
-      servers.value.forEach((o) => {
+      servers.value.forEach((o: any) => {
         if (o.path.length > 0) {
           sbConfig.Append("\n");
           sbConfig.Append("\n");
@@ -279,7 +280,7 @@ function input() {
 
 
     if (servers.value.length > 0) {
-      servers.value.forEach((o) => {
+      servers.value.forEach((o: any) => {
         if (o.path.length > 0) {
           sbConfig.Append("  location /" + o.path.split("/")[o.path.split("/").length - 1] + " {\n");
           sbConfig.Append("      root   " + o.path + ";\n");
@@ -307,7 +308,7 @@ function input() {
     }
     * */
     if (servers.value.length > 0) {
-      servers.value.forEach((o) => {
+      servers.value.forEach((o: any) => {
         if (o.path.length > 0) {
           sbConfig.Append("\n");
           sbConfig.Append("\n");
