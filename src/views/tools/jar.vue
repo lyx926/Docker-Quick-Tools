@@ -1,32 +1,32 @@
 <template>
-  <div class="content">
-    <!--    <img alt='Vue logo' :src='logo' />-->
-    <p>This is a Jar config.</p>
-    <router-link to="/">Go Back</router-link>
-    <h1> parameters</h1>
-    <div><input placeholder="请输入容器名称" v-model="name" @input="input" />
+    <div class="content">
+        <!--    <img alt='Vue logo' :src='logo' />-->
+        <p>This is a Jar config.</p>
+        <router-link to="/">Go Back</router-link>
+        <h1> parameters</h1>
+        <div><input placeholder="请输入容器名称" v-model="name" @input="input"/>
+        </div>
+        <div><input placeholder="请输入容器目录" v-model="jar" @input="input"/>
+        </div>
+        <div><input placeholder="请输入容器端口" v-model="port" @input="input"
+                    type="number"/>
+        </div>
+        <h1>command</h1>
+        <div>
+            <textarea style="width: 50%;" rows="15" v-model="text"></textarea>
+        </div>
+        <!--    <div>
+              <button @click="copy">复制</button>
+            </div>-->
     </div>
-    <div><input placeholder="请输入容器目录" v-model="jar" @input="input" />
-    </div>
-    <div><input placeholder="请输入容器端口" v-model="port" @input="input"
-                type="number" />
-    </div>
-    <h1>command</h1>
-    <div>
-      <textarea style="width: 50%;" rows="15" v-model="text"></textarea>
-    </div>
-    <!--    <div>
-          <button @click="copy">复制</button>
-        </div>-->
-  </div>
 </template>
 
 <script setup lang="ts">
 // import logo from '@/assets/img/logo.png'
-import { ref, onMounted } from "vue";
+import {ref, onMounted} from "vue";
 
 onMounted(() => {
-  input();
+    input();
 });
 
 let name = ref("jar_server");
@@ -48,45 +48,45 @@ let text = ref("");
 }*/
 
 function input() {
-  let sbHtml = new StringBuffer();
-  sbHtml.Append("docker run \\\n");
-  sbHtml.Append("  --name " + name.value + " \\\n");
-  sbHtml.Append("  --privileged=true \\\n");
-  sbHtml.Append("  --restart=always \\\n");
-  sbHtml.Append("  -v " + jar.value + ":/var/lib/mysql \\\n");
-  sbHtml.Append("  -p " + port.value + ":8080 \\\n");
-  sbHtml.Append("  -e TZ=Asia/Shanghai \\\n");
-  sbHtml.Append("  -d 15588855251/web-jar");
+    let sbHtml = new StringBuffer();
+    sbHtml.Append("docker run \\\n");
+    sbHtml.Append("  --name " + name.value + " \\\n");
+    sbHtml.Append("  --privileged=true \\\n");
+    sbHtml.Append("  --restart=always \\\n");
+    sbHtml.Append("  -v " + jar.value + ":/var/lib/mysql \\\n");
+    sbHtml.Append("  -p " + port.value + ":8080 \\\n");
+    sbHtml.Append("  -e TZ=Asia/Shanghai \\\n");
+    sbHtml.Append("  -d 15588855251/web-jar");
 
-  text.value = sbHtml.ToString();
+    text.value = sbHtml.ToString();
 
-  /*
-  docker run \
-  --name ${java_app_name} \
-  --privileged=true \
-  --restart=always \
-  -v ${server_home}/jarhome:/root \
-  -p ${java_port}:8080 \
-  -e TZ=Asia/Shanghai \
-  -d ${group_name}/${java_app_name}:${app_version}
-  * */
+    /*
+    docker run \
+    --name ${java_app_name} \
+    --privileged=true \
+    --restart=always \
+    -v ${server_home}/jarhome:/root \
+    -p ${java_port}:8080 \
+    -e TZ=Asia/Shanghai \
+    -d ${group_name}/${java_app_name}:${app_version}
+    * */
 }
 
 class StringBuffer {
-  private __strings__: any[];
+    private __strings__: any[];
 
-  constructor() {
-    this.__strings__ = [];
-  }
+    constructor() {
+        this.__strings__ = [];
+    }
 
-  Append(str: string) {
-    this.__strings__.push(str);
-    return this;
-  }
+    Append(str: string) {
+        this.__strings__.push(str);
+        return this;
+    }
 
-  ToString() {
-    return this.__strings__.join("");
-  }
+    ToString() {
+        return this.__strings__.join("");
+    }
 }
 
 // let __strings__ = ref([]);
