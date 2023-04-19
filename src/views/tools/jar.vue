@@ -1,24 +1,49 @@
 <template>
-    <div class="content">
-        <!--    <img alt='Vue logo' :src='logo' />-->
-        <p>This is a Jar config.</p>
-        <router-link to="/">Go Back</router-link>
-        <h1> parameters</h1>
-        <div><input placeholder="请输入容器名称" v-model="name" @input="input"/>
-        </div>
-        <div><input placeholder="请输入容器目录" v-model="jar" @input="input"/>
-        </div>
-        <div><input placeholder="请输入容器端口" v-model="port" @input="input"
-                    type="number"/>
-        </div>
-        <h1>command</h1>
-        <div>
-            <textarea style="width: 50%;" rows="15" v-model="text"></textarea>
-        </div>
-        <!--    <div>
-              <button @click="copy">复制</button>
-            </div>-->
-    </div>
+
+  <!-- 1最外层 -->
+    <n-space vertical size="large">
+        <!-- 2行  -->
+        <n-layout>
+            <!-- 3列 -->
+            <n-layout-header>
+                <h1>This is a Jar config.</h1>
+                <router-link to="/">Go Back</router-link>
+            </n-layout-header>
+            <!--   参数   -->
+            <n-divider dashed>
+                参数
+            </n-divider>
+            <n-layout has-sider>
+                <n-layout-content content-style="padding: 5px;">
+                    <n-input type="text" placeholder="容器名称 例:[xxx_jar]"
+                             v-model:value="name"
+                             @input="input()"/>
+                </n-layout-content>
+                <n-layout-content content-style="padding: 5px;">
+                    <n-input type="text" placeholder="容器目录 例:[/home/app/xxx_jar]"
+                             v-model:value="jar" @input="input"/>
+                </n-layout-content>
+                <n-layout-content content-style="padding: 5px;">
+                    <n-input type="text" placeholder="容器端口 例:[8080]"
+                             v-model:value="port" @input="input"/>
+                </n-layout-content>
+            </n-layout>
+            <!--   命令   -->
+            <n-divider dashed>
+                命令
+            </n-divider>
+            <n-layout-footer>
+                <n-input
+                        type="textarea"
+                        placeholder="命令"
+                        :autosize="{ minRows: 3 }"
+                        v-model:value="command"
+                />
+            </n-layout-footer>
+        </n-layout>
+
+    </n-space>
+
 </template>
 
 <script setup lang="ts">
@@ -29,16 +54,16 @@ onMounted(() => {
     input();
 });
 
-let name = ref("jar_server");
-let jar = ref("/home/app/jar_server/jar");
+let name = ref("serve_jar");
+let jar = ref("/home/app/serve_jar/jar");
 let port = ref("8080");
-let text = ref("");
+let command = ref("");
 
 /*function copy() {
-  // const txt = document.getElementById('code').innerText
+  // const txt = document.getElementById('code').innercommand
   // 添加一个input元素放置需要的文本内容
   const dataContainer = document.createElement("input");
-  dataContainer.value = text.value;
+  dataContainer.value = command.value;
   document.body.appendChild(dataContainer);
   // 选中并复制文本到剪切板
   dataContainer.select();
@@ -53,12 +78,12 @@ function input() {
     sbHtml.Append("  --name " + name.value + " \\\n");
     sbHtml.Append("  --privileged=true \\\n");
     sbHtml.Append("  --restart=always \\\n");
-    sbHtml.Append("  -v " + jar.value + ":/var/lib/mysql \\\n");
+    sbHtml.Append("  -v " + jar.value + ":/root \\\n");
     sbHtml.Append("  -p " + port.value + ":8080 \\\n");
     sbHtml.Append("  -e TZ=Asia/Shanghai \\\n");
-    sbHtml.Append("  -d 15588855251/web-jar");
+    sbHtml.Append("  -d 15588855251/webjar");
 
-    text.value = sbHtml.ToString();
+    command.value = sbHtml.ToString();
 
     /*
     docker run \
@@ -120,7 +145,14 @@ StringBuffer.prototype.size = function() {
 </script>
 
 <style lang="less" scoped>
-.content {
+.n-layout-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/*.content {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -131,6 +163,10 @@ StringBuffer.prototype.size = function() {
   a {
     color: #42b983;
   }
+}*/
+
+a {
+  color: #42b983;
 }
 
 button {

@@ -19,7 +19,7 @@
                              @input="input()"/>
                 </n-layout-content>
                 <n-layout-content content-style="padding: 5px;">
-                    <n-input type="text" placeholder="容器目录 例:[/home/app/xxx_server]"
+                    <n-input type="text" placeholder="容器目录 例:[/home/app/xxx_nginx]"
                              v-model:value="containerCert" @input="input"/>
                 </n-layout-content>
             </n-layout>
@@ -105,8 +105,8 @@ onMounted(() => {
     input();
 });
 
-let containerName = ref("web_nginx");
-let containerCert = ref("/home/app/web_server");
+let containerName = ref("serve_nginx");
+let containerCert = ref("/home/app/serve_nginx");
 let containerPort = ref("80");
 let containerSslPort = ref("");
 let apiUrl = ref("http://172.17.0.1");
@@ -199,7 +199,7 @@ function input() {
         sbConfig.Append("  }\n\n");
 
         if (String(apiPort.value).length > 0) {
-            sbConfig.Append("  location /prod-api/{\n");
+            sbConfig.Append("  location /prod-api/ {\n");
             sbConfig.Append("      proxy_set_header Host $http_host;\n");
             sbConfig.Append("      proxy_set_header X-Real-IP $remote_addr;\n");
             sbConfig.Append("      proxy_set_header REMOTE-HOST $remote_addr;\n");
@@ -252,7 +252,7 @@ function input() {
         sbConfig.Append("  }\n\n");
 
         if (String(apiPort.value).length > 0) {
-            sbConfig.Append("  location /prod-api/{\n");
+            sbConfig.Append("  location /prod-api/ {\n");
             sbConfig.Append("      proxy_set_header Host $http_host;\n");
             sbConfig.Append("      proxy_set_header X-Real-IP $remote_addr;\n");
             sbConfig.Append("      proxy_set_header REMOTE-HOST $remote_addr;\n");

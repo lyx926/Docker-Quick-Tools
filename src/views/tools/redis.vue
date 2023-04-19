@@ -30,7 +30,7 @@ onMounted(() => {
     input();
 });
 
-let name = ref("redis_server");
+let name = ref("serve_redis");
 let port = ref("6379");
 let pwd = ref("");
 let text = ref("");
