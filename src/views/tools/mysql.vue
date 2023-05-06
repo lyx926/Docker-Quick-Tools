@@ -61,6 +61,7 @@ function input() {
     sbHtml.Append("  -e MYSQL_ROOT_PASSWORD=" + pwd.value + " \\\n");
     sbHtml.Append("  -e TZ=Asia/Shanghai \\\n");
     sbHtml.Append("  -d mysql:5.7.28");
+    sbHtml.Append("  --lower_case_table_names=1");
 
     text.value = sbHtml.ToString();
 

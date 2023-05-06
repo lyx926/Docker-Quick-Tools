@@ -12,6 +12,10 @@ npm run build
 
 ## 版本记录
 
+### v1.0.2
+
+- MySQL忽略大小写
+
 ### v1.0.1
 
 - 增加naive-ui
