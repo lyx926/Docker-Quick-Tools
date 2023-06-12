@@ -53,7 +53,7 @@ onMounted(() => {
   input();
 });
 let name = ref("serve_mysql");
-let mysql = ref("/home/app/serve_mysql/mysql/");
+let mysql = ref("/home/app/serve_mysql/mysql");
 let port = ref("3306");
 let pwd = ref("password");
 let command = ref("");

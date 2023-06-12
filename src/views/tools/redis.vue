@@ -53,7 +53,7 @@ onMounted(() => {
   input();
 });
 let name = ref("serve_redis");
-let redis = ref("/home/app/serve_redis/data/");
+let redis = ref("/home/app/serve_redis/data");
 let port = ref("6379");
 let pwd = ref("system");
 let command = ref("");
