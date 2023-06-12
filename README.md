@@ -12,6 +12,14 @@ npm run build
 
 ## 版本记录
 
+### v1.0.3
+
+- 修改MySQL界面样式
+- 修改redis界面样式
+- 增加redis映射date卷
+- 增加redis自启动
+- 修改nginx映射多个卷
+
 ### v1.0.2
 
 - MySQL忽略大小写

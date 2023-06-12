@@ -1,140 +1,111 @@
 <template>
-    <div class="content">
-        <!--    <img alt='Vue logo' :src='logo' />-->
-        <p>This is a Redis config.</p>
+  <!-- 1最外层 -->
+  <n-space vertical size="large">
+    <!-- 2行  -->
+    <n-layout>
+      <!-- 3列 -->
+      <n-layout-header>
+        <h1>This is a Jar config.</h1>
         <router-link to="/">Go Back</router-link>
-        <h1> parameters</h1>
-        <div><input placeholder="请输入容器名称" v-model="name" @input="input"/>
-        </div>
-        <div><input placeholder="请输入容器端口" v-model="port" @input="input"
-                    type="number"/>
-        </div>
-        <div><input placeholder="请输入容器密码，密码默认不填写免密连接"
-                    v-model="pwd"
-                    @input="input"/></div>
-        <h1>command</h1>
-        <div>
-            <textarea style="width: 50%;" rows="15" v-model="text"></textarea>
-        </div>
-        <!--    <div>
-              <button @click="copy">复制</button>
-            </div>-->
-    </div>
+      </n-layout-header>
+      <!--   参数   -->
+      <n-divider dashed>
+        参数
+      </n-divider>
+      <n-layout has-sider>
+        <n-layout-content content-style="padding: 5px;">
+          <n-input type="text" placeholder="容器名称 例:[xxx_redis]"
+                   v-model:value="name"
+                   @input="input()"/>
+        </n-layout-content>
+        <n-layout-content content-style="padding: 5px;">
+          <n-input type="text" placeholder="容器目录 例:[/home/app/xxx_mysql]"
+                   v-model:value="redis" @input="input"/>
+        </n-layout-content>
+        <n-layout-content content-style="padding: 5px;">
+          <n-input type="text" placeholder="容器端口 例:[6379]"
+                   v-model:value="port" @input="input"/>
+        </n-layout-content>
+        <n-layout-content content-style="padding: 5px;">
+          <n-input type="text" placeholder="容器密码 例:[system]"
+                   v-model:value="pwd" @input="input"/>
+        </n-layout-content>
+      </n-layout>
+      <!--   命令   -->
+      <n-divider dashed>
+        命令
+      </n-divider>
+      <n-layout-footer>
+        <n-input
+            type="textarea"
+            placeholder="命令"
+            :autosize="{ minRows: 3 }"
+            v-model:value="command"
+        />
+      </n-layout-footer>
+    </n-layout>
+  </n-space>
 </template>
-
 <script setup lang="ts">
-// import logo from '@/assets/img/logo.png'
 import {ref, onMounted} from "vue";
 
 onMounted(() => {
-    input();
+  input();
 });
-
 let name = ref("serve_redis");
+let redis = ref("/home/app/serve_redis/data/");
 let port = ref("6379");
-let pwd = ref("");
-let text = ref("");
+let pwd = ref("system");
+let command = ref("");
 
-
-/*function copy() {
-  // const txt = document.getElementById('code').innerText
-  // 添加一个input元素放置需要的文本内容
-  const dataContainer = document.createElement("input");
-  dataContainer.value = text.value;
-  document.body.appendChild(dataContainer);
-  // 选中并复制文本到剪切板
-  dataContainer.select();
-  document.execCommand("copy");
-  // 移除input元素
-  document.body.removeChild(dataContainer);
-}*/
-
+// docker run -p 6379:6379 --name redis -v /root/redis/data:/data -d --restart=always redis:7-alpine --appendonly yes --requirepass "system"
 function input() {
-    let sbHtml = new StringBuffer();
-    sbHtml.Append("docker run \\\n");
-    sbHtml.Append("  --name " + name.value + " \\\n");
-    sbHtml.Append("  --privileged=true \\\n");
-    sbHtml.Append("  -p " + port.value + ":6379 \\\n");
-    sbHtml.Append("  -e TZ=Asia/Shanghai \\\n");
-    sbHtml.Append("  -d redis:7-alpine \\\n");
-    if (pwd.value.length > 0) {
-        sbHtml.Append("  --requirepass " + pwd.value + " \\\n");
-    }
+  let sbHtml = new StringBuffer();
+  sbHtml.Append("docker run \\\n");
+  sbHtml.Append("  -p " + port.value + ":6379 \\\n");
+  sbHtml.Append("  --name " + name.value + " \\\n");
+  sbHtml.Append("  -v " + redis.value + ":/data \\\n");
+  sbHtml.Append("  --privileged=true \\\n");
+  sbHtml.Append("  --restart=always \\\n");
+  sbHtml.Append("  -e TZ=Asia/Shanghai \\\n");
+  sbHtml.Append("  -d redis:7-alpine \\\n");
+  if (pwd.value.length > 0) {
+    sbHtml.Append("  --appendonly yes \\\n");
+    sbHtml.Append("  --requirepass " + pwd.value);
+  } else {
     sbHtml.Append("  --appendonly yes");
+  }
 
-    text.value = sbHtml.ToString();
-    /*
-    docker run \
-    --name ${redis_app_name} \
-    --privileged=true \
-    --restart=always \
-    -p ${redis_port}:6379 \
-    -e TZ=Asia/Shanghai \
-    -d ${group_name}/${redis_app_name}:${app_version} \
-    --requirepass system \
-    --appendonly yes
-    * */
+  command.value = sbHtml.ToString();
 }
 
 class StringBuffer {
-    private __strings__: any[];
+  private __strings__: any[];
 
-    constructor() {
-        this.__strings__ = [];
-    }
+  constructor() {
+    this.__strings__ = [];
+  }
 
-    Append(str: string) {
-        this.__strings__.push(str);
-        return this;
-    }
+  Append(str: string) {
+    this.__strings__.push(str);
+    return this;
+  }
 
-    ToString() {
-        return this.__strings__.join("");
-    }
+  ToString() {
+    return this.__strings__.join("");
+  }
+}
+</script>
+<style lang="less" scoped>
+.n-layout-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-/*let __strings__ = ref([]);
-function StringBuffer() {
-  __strings__.value = [];
-};
-StringBuffer.prototype.Append = function(str) {
-  __strings__.value.push(str);
-  return this;
-};
-//格式化字符串
-StringBuffer.prototype.AppendFormat = function(str) {
-  for (var i = 1; i < arguments.length; i++) {
-    var parent = "{" + (i - 1) + "}";
-    var reg = new RegExp(parent, "g");
-    str = str.replace(reg, arguments[i]);
-  }
-
-  __strings__.value.push(str);
-  return this;
-};
-StringBuffer.prototype.ToString = function() {
-  return __strings__.value.join("");
-};
-StringBuffer.prototype.clear = function() {
-  __strings__.value = [];
-};
-StringBuffer.prototype.size = function() {
-  return __strings__.value.length;
-};*/
-</script>
-
-<style lang="less" scoped>
-.content {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: var(--c-text);
-  margin-top: calc(var(--w-space) * 3);
-
-  a {
-    color: #42b983;
-  }
+a {
+  color: #42b983;
 }
 
 button {
