@@ -15,7 +15,7 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <div>
+    <div v-if="false">
     <div text-4xl>
       <div i-carbon-campsite inline-block />
     </div>
